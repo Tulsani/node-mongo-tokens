@@ -37,3 +37,18 @@
     }));
 
     exports.verifyUser = passport.authenticate('jwt',{session:false});
+    exports.verifyAdmin = function(req,res,next){
+        //Check if the user exsists in the doc
+        User.findOne({_id:req.user._id})
+        .then((user)=>{
+            if(user.admin){
+                next();
+            }
+            else{
+                err = new Error("You are not authorised for this action");
+                err.status = 403;
+                return next(err);
+            }
+        },(err)=>next(err))
+        .catch((err)=>next(err));
+    };
